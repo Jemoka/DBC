@@ -43,10 +43,10 @@ testing_data = testing_data.reset_index(drop=True)
 
 # create batches
 train_batches = train_data.groupby(by=lambda x: int(x % (len(train_data)/config.batch_size)))
-train_batch_count = len(train_batches)
+train_batch_count = len(train_batches) - 1 # minus one to drop half-batch
 
 test_batches = train_data.groupby(by=lambda x: int(x % (len(testing_data)/config.batch_size)))
-test_batch_count = len(test_batches)
+test_batch_count = len(test_batches) - 1  # minus one to drop half-batch
 
 #############################
 
