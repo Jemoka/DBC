@@ -10,6 +10,7 @@ from pathlib import Path
 
 # import globbing tools
 import glob
+from numpy.lib.stride_tricks import sliding_window_view
 
 # import pandas
 import pandas as pd # type: ignore
@@ -20,6 +21,8 @@ import pandas as pd # type: ignore
 # the experiement we are running
 DATA_PATH =  "./data/transcripts_nodisfluency/pitt-7-1/" # in path
 OUT_PATH = "./data/transcripts_nodisfluency/pitt-7-1.dat" # out path
+WINDOWED_PATH = "./data/transcripts_nodisfluency/pitt-7-1-windowed.dat" # out path
+WINDOW_SIZE =  5 
 TESTING_SPLIT = 5  # testing split (patients kper class)
 
 #################################################
@@ -124,8 +127,40 @@ testing_data["split"] = "test"
 data = pd.concat([training_data, testing_data])
 
 # final shuffle
-data = data.iloc[randomness.sample(range(len(data)), len(data))]
+data_shuffled = data.iloc[randomness.sample(range(len(data)), len(data))]
 
-# dump to data
-data.to_pickle(OUT_PATH)
+# concatenated results
+results = []
+trials = []
+
+# create windowed results
+for trial, frame in data.groupby(level=0):
+    # for each slice index
+    for i in range(0, len(frame)-WINDOW_SIZE, 1):
+        # for each slide of the data
+        slice = frame.iloc[i:i+WINDOW_SIZE]
+        # get the concatenated string
+        utterance_concat = " ".join(slice["utterance"])
+        # append the results
+        results.append(pd.Series({"utterance": utterance_concat,
+                                "target": frame["target"][0],
+                                "split": frame["split"][0]}))
+        # tell results about trials
+        trials.append(trial)
+
+# create windowed results
+data_windowed = pd.DataFrame(results)
+# create new window index
+data_windowed_tuples = [(i[1], i[0]) for i in list(enumerate(trials))]
+data_windowed_index = pd.MultiIndex.from_tuples(data_windowed_tuples,
+                                                names=["trial", "sample"])
+data_windowed.index = data_windowed_index
+
+# final shuffle
+data_windowed_shuffled = data_windowed.iloc[randomness.sample(range(len(data_windowed)), len(data_windowed))]
+
+# dump to data 
+data_shuffled.to_pickle(OUT_PATH)
+data_windowed_shuffled.to_pickle(WINDOWED_PATH)
+
 
