@@ -112,3 +112,6 @@ for epoch in range(config.epochs):
             "loss": model_output["loss"].item()
         })
 
+# save the model
+model.save_pretrained(f"./models/{run.name}")
+
