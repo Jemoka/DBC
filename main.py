@@ -8,13 +8,24 @@ import pandas as pd # type: ignore
 from transformers import BertForSequenceClassification, BertTokenizer
 from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 
+# torch
+import torch
+from torch.optim import AdamW # and adam
+import torch.nn.functional as F # and functional
+
 # weights and biases
 import wandb # type: ignore
+
+# tqdm
+from tqdm import tqdm
 
 # initialize the model
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
-    "batch_size": 8
+    "batch_size": 8,
+    "epochs": 2,
+    "lr": 3e-3,
+    "max_length": 60
 }
 
 # set up the run
@@ -54,5 +65,50 @@ test_batch_count = len(test_batches) - 1  # minus one to drop half-batch
 tokenizer = BertTokenizer.from_pretrained(config.model)
 model = BertForSequenceClassification.from_pretrained(config.model)
 
-# train_data
+# and also our optimizer
+optim = AdamW(model.parameters(), lr = config.lr)
+
+# watch!
+run.watch(model)
+
+#############################
+
+# ok, time for training
+
+model.train()
+
+# for each epoch
+for epoch in range(config.epochs):
+
+    # print current training
+    print(f"training epoch {epoch}")
+
+    for batch_id in tqdm(range(train_batch_count)):
+        # get the batch
+        batch = train_batches.get_group(batch_id)
+
+        # encode the batch
+        batch_encoded = tokenizer(batch["utterance"].to_list(),
+                                return_tensors="pt",
+                                max_length=config.max_length,
+                                padding=True,
+                                truncation=True)
+
+        # encode the labels
+        labels_encoded = F.one_hot(torch.tensor(batch["target"].to_numpy()), num_classes=2)
+
+        # run the model
+        model_output = model(**batch_encoded, labels=labels_encoded.float())
+
+        # backprop the loss
+        model_output["loss"].backward()
+
+        # and update the model
+        optim.step()
+        optim.zero_grad()
+
+        # plotting to training graph
+        run.log({
+            "loss": model_output["loss"].item()
+        })
 
