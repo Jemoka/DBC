@@ -1,5 +1,6 @@
 # random for testing
 import random
+from numpy import logical_and
 
 # import pandas
 import pandas as pd # type: ignore
@@ -18,6 +19,9 @@ import wandb # type: ignore
 
 # tqdm
 from tqdm import tqdm
+
+# initialize the device
+DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 # initialize the model
 CONFIG = {
@@ -56,20 +60,63 @@ testing_data = testing_data.reset_index(drop=True)
 train_batches = train_data.groupby(by=lambda x: int(x % (len(train_data)/config.batch_size)))
 train_batch_count = len(train_batches) - 1 # minus one to drop half-batch
 
-test_batches = train_data.groupby(by=lambda x: int(x % (len(testing_data)/config.batch_size)))
+test_batches = testing_data.groupby(by=lambda x: int(x % (len(testing_data)/config.batch_size)))
 test_batch_count = len(test_batches) - 1  # minus one to drop half-batch
 
 #############################
 
 # Epic. Let's load our models.
 tokenizer = BertTokenizer.from_pretrained(config.model)
-model = BertForSequenceClassification.from_pretrained(config.model)
+model = BertForSequenceClassification.from_pretrained(config.model).to(DEVICE)
 
 # and also our optimizer
-optim = AdamW(model.parameters(), lr = config.lr)
+optim = AdamW(model.parameters(), lr = config.lr).to(DEVICE)
 
 # watch!
 run.watch(model)
+
+#############################
+
+# define validation tools
+def eval_model_on_batch(model, batch):
+    # encode the batch
+    batch_encoded = tokenizer(batch["utterance"].to_list(),
+                            return_tensors="pt",
+                            max_length=config.max_length,
+                            padding=True,
+                            truncation=True).to(DEVICE)
+
+    # pass it through the model
+    model_output = model(**batch_encoded)["logits"].detach()
+    model_output_encoded = model_output.argmax(dim=1)
+
+    # get targets
+    targets = torch.Tensor(batch["target"].to_numpy()).to(DEVICE)
+
+    # calculate accuracy, precision, recall
+
+    # calculate pos/neg/etc.
+    true_pos = torch.logical_and(model_output_encoded == targets,
+                                model_output_encoded.bool())
+    true_neg = torch.logical_and(model_output_encoded == targets,
+                                torch.logical_not(model_output_encoded.bool()))
+    false_pos = torch.logical_and(model_output_encoded != targets,
+                                model_output_encoded.bool())
+    false_neg = torch.logical_and(model_output_encoded != targets,
+                                torch.logical_not(model_output_encoded.bool()))
+
+    # create the counts
+    true_pos = torch.sum(true_pos).cpu().item()
+    true_neg = torch.sum(true_neg).cpu().item()
+    false_pos = torch.sum(false_pos).cpu().item()
+    false_neg = torch.sum(false_neg).cpu().item()
+
+    acc = (true_pos+true_neg)/len(targets)
+    prec = true_pos/(true_pos+false_pos)
+    recc = true_pos/(true_pos+false_neg)
+
+    # and return
+    return (acc, prec, recc)
 
 #############################
 
@@ -92,10 +139,10 @@ for epoch in range(config.epochs):
                                 return_tensors="pt",
                                 max_length=config.max_length,
                                 padding=True,
-                                truncation=True)
+                                truncation=True).to(DEVICE)
 
         # encode the labels
-        labels_encoded = F.one_hot(torch.tensor(batch["target"].to_numpy()), num_classes=2)
+        labels_encoded = F.one_hot(torch.tensor(batch["target"].to_numpy()), num_classes=2).to(DEVICE)
 
         # run the model
         model_output = model(**batch_encoded, labels=labels_encoded.float())
@@ -109,7 +156,7 @@ for epoch in range(config.epochs):
 
         # plotting to training graph
         run.log({
-            "loss": model_output["loss"].item()
+            "loss": model_output["loss"].cpu().item()
         })
 
 # save the model
