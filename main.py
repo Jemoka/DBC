@@ -25,9 +25,9 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 # initialize the model
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
-    "batch_size": 8,
-    "epochs": 2,
-    "lr": 3e-3,
+    "batch_size": 4,
+    "epochs": 3,
+    "lr": 1e-5,
     "max_length": 60
 }
 
