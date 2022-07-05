@@ -154,7 +154,7 @@ for epoch in range(config.epochs):
 
         # calculate the accuracy
         model_output_encoded = model_output["logits"].detach().argmax(dim=1)
-        acc = torch.sum(model_output_encoded.bool() == target_tensor)/len(target_tensor)
+        acc = torch.sum(model_output_encoded.bool().cpu() == target_tensor)/len(target_tensor)
 
         # and update the model
         optim.step()
