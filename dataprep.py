@@ -20,8 +20,8 @@ import pandas as pd # type: ignore
 # set the path for data, this changes based on
 # the experiement we are running
 DATA_PATH =  "./data/transcripts_nodisfluency/pitt-7-4/" # in path
-OUT_PATH = "./data/transcripts_nodisfluency/pitt-7-4.dat" # out path
-WINDOWED_PATH = "./data/transcripts_nodisfluency/pitt-7-4-windowed.dat" # out path
+OUT_PATH = "./data/transcripts_nodisfluency/pitt-7-4-bal.dat" # out path
+WINDOWED_PATH = "./data/transcripts_nodisfluency/pitt-7-4-windowed-bal.dat" # out path
 WINDOW_SIZE =  5 
 TESTING_SPLIT = 10  # testing split (patients kper class)
 
@@ -118,13 +118,25 @@ control_indicies = control_indicies[:desired_length]
 dementia_indicies = dementia_indicies[:desired_length]
 
 # parcel out the last TESTING_SPLIT from each for testing
-training_indicies = control_indicies[:-TESTING_SPLIT]+dementia_indicies[:-TESTING_SPLIT]
+training_control_indicies = control_indicies[:-TESTING_SPLIT]
+training_dementia_indicies = dementia_indicies[:-TESTING_SPLIT]
+
+# get testing indicies
 testing_indicies = control_indicies[-TESTING_SPLIT:]+dementia_indicies[-TESTING_SPLIT:]
 
-# and shuffle actually
-training_data = data.loc[training_indicies]
+# parcel out training data
+training_control_data = data.loc[training_control_indicies]
+training_dementia_data = data.loc[training_dementia_indicies]
+
+# cut the htraining data down
+desired_training_length = min(len(training_control_data), len(training_dementia_data))
+training_data = pd.concat([training_control_data.iloc[:desired_training_length],
+                           training_dementia_data.iloc[:desired_training_length]])
+
+# parcel out testing data
 testing_data = data.loc[testing_indicies]
 
+# add labels
 training_data["split"] = "train"
 testing_data["split"] = "test"
 
