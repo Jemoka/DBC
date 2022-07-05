@@ -42,7 +42,7 @@ CONFIG = {
 DATASET = "./data/transcripts_nodisfluency/pitt-7-4-windowed-bal.dat"
 
 # pg 4, Yuan 2021
-K = 2
+K = 50
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
@@ -102,7 +102,7 @@ recc = []
 
 for i, (train_data, test_data) in enumerate(train_eval_groupings):
     # print
-    print(f"\nCurrently evaluating via fold {i}.")
+    print(f"\nCurrently evaluating with fold {i}.")
 
     # create train and test batches
     train_batches = train_data.groupby(by=lambda x: int(x % (len(train_data)/config.batch_size)))
