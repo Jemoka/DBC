@@ -23,7 +23,7 @@ DATA_PATH =  "./data/transcripts_nodisfluency/pitt-7-4/" # in path
 OUT_PATH = "./data/transcripts_nodisfluency/pitt-7-4.dat" # out path
 WINDOWED_PATH = "./data/transcripts_nodisfluency/pitt-7-4-windowed.dat" # out path
 WINDOW_SIZE =  5 
-TESTING_SPLIT = 5  # testing split (patients kper class)
+TESTING_SPLIT = 10  # testing split (patients kper class)
 
 #################################################
 
