@@ -14,7 +14,7 @@ from pathlib import Path
 from util import mean_confidence_interval
 
 # load results
-RESULTS = "./results/results-7-fold-k8nrDpsmAHtEbBtihXzhQY.csv"
+RESULTS = "./results/results-50-fold-F4ZVbGfdBAQvtvXemWZCZD.csv"
 CONFIDENCE = 0.95
 
 # put it into a dataframe
