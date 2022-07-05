@@ -41,7 +41,7 @@ config = run.config
 #############################
 
 # Load the current dataset, which is pitt-7-4
-df = pd.read_pickle("./data/transcripts_nodisfluency/pitt-7-4-windowed.dat")
+df = pd.read_pickle("./data/transcripts_nodisfluency/pitt-7-4-windowed-bal.dat")
 
 # Split train and test
 train_data = df[df["split"] == "train"]
