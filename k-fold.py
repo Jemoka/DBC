@@ -33,7 +33,7 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
     "batch_size": 72,
-    "epochs": 3,
+    "epochs": 0,
     "lr": 1e-5,
     "max_length": 60
 }
@@ -111,9 +111,9 @@ for i, (train_data, test_data) in enumerate(train_eval_groupings):
     model, tokenizer = train(config.model, train_batches, test_data, config, False)
 
     # and evaluate across batches
-    acc_batch:list[float] = []
-    prec_batch:list[float] = []
-    recc_batch:list[float] = []
+    acc_batch = []
+    prec_batch = []
+    recc_batch = []
 
     # for each batch
     for batch_id in range(len(test_batches)):
