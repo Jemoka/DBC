@@ -58,6 +58,8 @@ def read_and_clean(files, target):
             data = pd.read_csv(data_file, sep="|", header=None)
         except:
             print(f"Read error on {data_file}, skipping.")
+            continue
+        
         # label column as utterance
         data.columns = ["utterance"]
         # add another column representing file name
