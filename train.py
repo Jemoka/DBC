@@ -31,7 +31,7 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
     if wandb_run:
         run = wandb_run
     else:
-        run = run = wandb.init(project="DBC", entity="jemoka", config=CONFIG, mode="disabled")
+        run = run = wandb.init(project="DBC", entity="jemoka", mode="disabled")
 
     # count batches 
     train_batch_count = len(train_batches) # minus one to drop half-batch
