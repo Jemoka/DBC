@@ -3,3 +3,5 @@ data/*
 env/*
 models/*
 .DS_Store
+__pycache__/
+results/*
