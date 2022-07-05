@@ -23,6 +23,7 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 TOKENIZER = "nghuyong/ernie-2.0-en"
 MODEL = "./models/helpful-leaf-7"
 MAX_LENGTH = 60
+WINDOW_SIZE = 5
 
 #############################
 
@@ -93,6 +94,45 @@ def eval_model_on_batch(model, batch):
     # and return
     return acc, prec, recc
 
+# define prediction on sample tools
+def predict_on_sample(model, sample):
+    # encode the batch
+    batch_encoded = tokenizer([sample],
+                            return_tensors="pt",
+                            max_length=MAX_LENGTH,
+                            padding=True,
+                            truncation=True).to(DEVICE)
+    # pass it through the model
+    model_output = model(**batch_encoded)["logits"].detach()
+    # print results
+    return model_output[0].cpu().numpy().tolist()
+
+#############################
+
+# run predction interactively
+while True:
+    # take sample
+    sample:list = []
+
+    # get input until its filled
+    while len(sample) < WINDOW_SIZE: 
+        sample.append(input(f"{len(sample)}> ").strip().lower())
+
+    # continue to validate on test set if needed
+    if sample[-1] == "v":
+        break
+
+    # get results
+    result = predict_on_sample(model, " ".join(sample))
+    # print results
+    print(f"""
+
+ Model: {Path(MODEL).stem}
+ --------------------
+ Sample: {" ".join(sample)}
+ Preds: {result}
+""")
+
 #############################
 
 # run validation
@@ -105,5 +145,4 @@ print(f"""
  Recall: {round(recc, 4)*100:.2f}%
  F1: {round(2*((prec*recc)/(prec+recc)), 4)*100:.2f}%
 """)
-
 
