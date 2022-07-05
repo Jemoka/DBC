@@ -143,8 +143,8 @@ for epoch in range(config.epochs):
                                 truncation=True).to(DEVICE)
 
         # encode the labels
-        target_tensor = torch.tensor(batch["target"].to_numpy())
-        labels_encoded = F.one_hot(target_tensor, num_classes=2).to(DEVICE)
+        target_tensor = torch.tensor(batch["target"].to_numpy()).to(DEVICE)
+        labels_encoded = F.one_hot(target_tensor, num_classes=2)
 
         # run the model
         model_output = model(**batch_encoded, labels=labels_encoded.float())
@@ -154,7 +154,7 @@ for epoch in range(config.epochs):
 
         # calculate the accuracy
         model_output_encoded = model_output["logits"].detach().argmax(dim=1)
-        acc = torch.sum(model_output_encoded.bool().cpu() == target_tensor)/len(target_tensor)
+        acc = torch.sum(model_output_encoded.bool() == target_tensor)/len(target_tensor)
 
         # and update the model
         optim.step()
@@ -163,7 +163,7 @@ for epoch in range(config.epochs):
         # plotting to training graph
         run.log({
             "loss": model_output["loss"].cpu().item(),
-            "acc": acc.item()
+            "acc": acc.cpu().item()
         })
 
         # for every 10 batches, randomly perform a single validation sample
