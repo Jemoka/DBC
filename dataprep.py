@@ -19,9 +19,9 @@ import pandas as pd # type: ignore
 
 # set the path for data, this changes based on
 # the experiement we are running
-DATA_PATH =  "./data/transcripts_nodisfluency/pitt-7-1/" # in path
-OUT_PATH = "./data/transcripts_nodisfluency/pitt-7-1.dat" # out path
-WINDOWED_PATH = "./data/transcripts_nodisfluency/pitt-7-1-windowed.dat" # out path
+DATA_PATH =  "./data/transcripts_nodisfluency/pitt-7-4/" # in path
+OUT_PATH = "./data/transcripts_nodisfluency/pitt-7-4.dat" # out path
+WINDOWED_PATH = "./data/transcripts_nodisfluency/pitt-7-4-windowed.dat" # out path
 WINDOW_SIZE =  5 
 TESTING_SPLIT = 5  # testing split (patients kper class)
 
@@ -54,7 +54,10 @@ def read_and_clean(files, target):
     # for each control file
     for data_file in files:
         # read the datafile as a single column csv
-        data = pd.read_csv(data_file, sep="|", header=None)
+        try: 
+            data = pd.read_csv(data_file, sep="|", header=None)
+        except:
+            print(f"Read error on {data_file}, skipping.")
         # label column as utterance
         data.columns = ["utterance"]
         # add another column representing file name
