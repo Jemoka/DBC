@@ -4,6 +4,9 @@ import random
 # import pandas
 import pandas as pd # type: ignore
 
+# import numpy
+import numpy as np
+
 # and huggingface
 from transformers import BertForSequenceClassification, BertTokenizer
 from transformers.tokenization_utils_base import BatchEncoding # type: ignore
@@ -15,6 +18,9 @@ import torch.nn.functional as F # and functional
 
 # tqdm
 from tqdm import tqdm
+
+# stats
+import scipy.stats
 
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -102,4 +108,25 @@ def predict_on_sample(model, sample, tokenizer, max_length):
     model_output = model(**batch_encoded)["logits"].detach()
     # print results
     return model_output[0].cpu().numpy().tolist()
+
+# confidence intervals
+def mean_confidence_interval(data, confidence=0.95):
+    """calculate an n confidence interval
+
+    Arguments:
+        data (array-like): array-like data
+        [confidence] (float): interval
+
+    Returns:
+    (float)s mean and confidence band
+
+    Source: https://stackoverflow.com/questions/15033511/compute-a-confidence-interval-from-sample-data
+    """
+    
+    a = 1.0 * np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
+    return m, h
+
 
