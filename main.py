@@ -1,6 +1,5 @@
 # random for testing
 import random
-from numpy import logical_and
 
 # import pandas
 import pandas as pd # type: ignore
@@ -70,7 +69,7 @@ tokenizer = BertTokenizer.from_pretrained(config.model)
 model = BertForSequenceClassification.from_pretrained(config.model).to(DEVICE)
 
 # and also our optimizer
-optim = AdamW(model.parameters(), lr = config.lr).to(DEVICE)
+optim = AdamW(model.parameters(), lr = config.lr)
 
 # watch!
 run.watch(model)
@@ -94,7 +93,6 @@ def eval_model_on_batch(model, batch):
     targets = torch.Tensor(batch["target"].to_numpy()).to(DEVICE)
 
     # calculate accuracy, precision, recall
-
     # calculate pos/neg/etc.
     true_pos = torch.logical_and(model_output_encoded == targets,
                                 model_output_encoded.bool())
@@ -112,11 +110,14 @@ def eval_model_on_batch(model, batch):
     false_neg = torch.sum(false_neg).cpu().item()
 
     acc = (true_pos+true_neg)/len(targets)
-    prec = true_pos/(true_pos+false_pos)
+    if (true_pos+false_pos) == 0:
+        prec = 0
+    else:
+        prec = true_pos/(true_pos+false_pos)
     recc = true_pos/(true_pos+false_neg)
 
     # and return
-    return (acc, prec, recc)
+    return acc, prec, recc
 
 #############################
 
@@ -142,7 +143,8 @@ for epoch in range(config.epochs):
                                 truncation=True).to(DEVICE)
 
         # encode the labels
-        labels_encoded = F.one_hot(torch.tensor(batch["target"].to_numpy()), num_classes=2).to(DEVICE)
+        target_tensor = torch.tensor(batch["target"].to_numpy())
+        labels_encoded = F.one_hot(target_tensor, num_classes=2).to(DEVICE)
 
         # run the model
         model_output = model(**batch_encoded, labels=labels_encoded.float())
@@ -150,14 +152,33 @@ for epoch in range(config.epochs):
         # backprop the loss
         model_output["loss"].backward()
 
+        # calculate the accuracy
+        model_output_encoded = model_output["logits"].detach().argmax(dim=1)
+        acc = torch.sum(model_output_encoded.bool() == target_tensor)/len(target_tensor)
+
         # and update the model
         optim.step()
         optim.zero_grad()
 
         # plotting to training graph
         run.log({
-            "loss": model_output["loss"].cpu().item()
+            "loss": model_output["loss"].cpu().item(),
+            "acc": acc.item()
         })
+
+        # for every 10 batches, randomly perform a single validation sample
+        if batch_id % 10 == 0:
+            # run validation 
+            val_batch = test_batches.get_group(random.randint(0, len(test_batches)-1))
+            acc, prec, recc = eval_model_on_batch(model, val_batch)
+
+            # plot
+            run.log({
+                "val_accuracy": acc,
+                "val_prec": prec,
+                "val_recc": recc,
+            })
+        
 
 # save the model
 model.save_pretrained(f"./models/{run.name}")
