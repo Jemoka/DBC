@@ -33,7 +33,7 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
     "batch_size": 72,
-    "epochs": 0,
+    "epochs": 3,
     "lr": 1e-5,
     "max_length": 60
 }
