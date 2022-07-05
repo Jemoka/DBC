@@ -114,7 +114,11 @@ def eval_model_on_batch(model, batch):
         prec = 0
     else:
         prec = true_pos/(true_pos+false_pos)
-    recc = true_pos/(true_pos+false_neg)
+
+    if (true_pos+false_neg) == 0:
+        recc = 0
+    else:
+        recc = true_pos/(true_pos+false_neg)
 
     # and return
     return acc, prec, recc
