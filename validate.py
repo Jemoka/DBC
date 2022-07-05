@@ -21,7 +21,7 @@ from pathlib import Path
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 TOKENIZER = "nghuyong/ernie-2.0-en"
-MODEL = "./models/vocal-oath-6"
+MODEL = "./models/helpful-leaf-7"
 MAX_LENGTH = 60
 
 #############################
