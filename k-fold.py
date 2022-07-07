@@ -39,7 +39,7 @@ CONFIG = {
 }
 
 # that used on helpful-leaf-7
-DATASET = "./data/transcripts_nodisfluency/pitt-7-4-windowed-bal.dat"
+DATASET = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-bal.dat"
 
 # pg 4, Yuan 2021
 K = 50
