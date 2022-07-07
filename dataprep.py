@@ -20,9 +20,9 @@ import pandas as pd # type: ignore
 # set the path for data, this changes based on
 # the experiement we are running
 DATA_PATH =  "./data/transcripts_nodisfluency/cookiepitt-7-7" # in path
-OUT_PATH = "./data/transcripts_nodisfluency/cookiepitt-7-7-bal.dat" # out path
-WINDOWED_PATH = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-bal.dat" # out path
-WINDOW_SIZE =  5 
+OUT_PATH = "./data/transcripts_nodisfluency/cookiepitt-7-7-long-bal.dat" # out path
+WINDOWED_PATH = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat" # out path
+WINDOW_SIZE =  7 
 TESTING_SPLIT = 10  # testing split (patients kper class)
 
 #################################################
