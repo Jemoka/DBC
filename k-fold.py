@@ -34,7 +34,7 @@ CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
     "batch_size": 72,
     "epochs": 3,
-    "lr": 1e-5,
+    "lr": 1e-4,
     "max_length": 60
 }
 
