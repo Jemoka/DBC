@@ -27,14 +27,14 @@ from util import predict_on_sample, eval_model_on_batch
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 TOKENIZER = "nghuyong/ernie-2.0-en"
-MODEL = "./models/brisk-oath-10"
+MODEL = "./models/floral-sunset-12"
 MAX_LENGTH = 60
 WINDOW_SIZE = 5
 
 #############################
 
 # Load the current dataset, which is pitt-7-4
-df = pd.read_pickle("./data/transcripts_nodisfluency/pitt-7-4-windowed.dat")
+df = pd.read_pickle("./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-bal.dat")
 
 # Get the testing data
 testing_data = df[df["split"] == "test"]
