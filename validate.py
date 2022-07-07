@@ -29,7 +29,7 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 TOKENIZER = "nghuyong/ernie-2.0-en"
 MODEL = "./models/smart-river-14"
 MAX_LENGTH = 60
-WINDOW_SIZE = 5
+WINDOW_SIZE = 7
 
 #############################
 
