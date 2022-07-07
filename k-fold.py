@@ -32,14 +32,14 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 # ARE WE SURE THESE VALUES ARE THE PARAMETRES WE ARE TESTING??
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
-    "batch_size": 72,
+    "batch_size": 64,
     "epochs": 3,
     "lr": 1e-4,
     "max_length": 60
 }
 
 # that used on helpful-leaf-7
-DATASET = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-bal.dat"
+DATASET = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat"
 
 # pg 4, Yuan 2021
 K = 50
