@@ -18,6 +18,9 @@ from tqdm import tqdm
 # pathlib
 from pathlib import Path
 
+# intepretation tools
+from transformers_interpret import SequenceClassificationExplainer
+
 # our utils
 from util import predict_on_sample, eval_model_on_batch
 
@@ -47,8 +50,10 @@ testing_data = testing_data.reset_index(drop=True)
 # Epic. Let's load our models.
 tokenizer = BertTokenizer.from_pretrained(TOKENIZER)
 model = BertForSequenceClassification.from_pretrained(MODEL).to(DEVICE)
+explainer = SequenceClassificationExplainer(model, tokenizer)
 
 #############################
+
 
 # run predction interactively
 while True:
@@ -65,14 +70,32 @@ while True:
 
     # get results
     result = predict_on_sample(model, " ".join(sample), tokenizer, MAX_LENGTH)
+
+    # get explain attrs 
+    attrs = explainer(" ".join(sample))
+
+    # round the attr results
+    attrs_rounded = [(i[0], round(i[1],2)) for i in attrs]
+
     # print results
     print(f"""
+Model: {Path(MODEL).stem}
+--------------------
+Sample: {" ".join(sample)}
+Conclusion: {"dementia" if result[1] > result[0] else "control"}
+Preds: {result}
+--------------------
 
- Model: {Path(MODEL).stem}
- --------------------
- Sample: {" ".join(sample)}
- Preds: {result}
-""")
+Token Predictions
+    """)
+
+    # print tokens
+    for token in attrs_rounded:
+        # print it, aligned
+        print(f"{token[0]:<12}{token[1]:>5}")
+
+    # print a newline
+    print()
 
 #############################
 
