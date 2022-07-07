@@ -34,7 +34,7 @@ WINDOW_SIZE = 7
 #############################
 
 # Load the current dataset, which is pitt-7-4
-df = pd.read_pickle("./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-bal.dat")
+df = pd.read_pickle("./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat")
 
 # Get the testing data
 testing_data = df[df["split"] == "test"]
