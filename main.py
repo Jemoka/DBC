@@ -32,13 +32,13 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 # initialize the model
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
-    "batch_size": 72,
+    "batch_size": 64,
     "epochs": 3,
     "lr": 1e-4,
     "max_length": 60
 }
 
-DATASET = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-bal.dat"
+DATASET = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat"
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
