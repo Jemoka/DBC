@@ -41,14 +41,6 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
     tokenizer = BertTokenizer.from_pretrained(base_model)
     model = BertForSequenceClassification.from_pretrained(base_model).to(DEVICE)
 
-    # Train only on classifier
-    for param in model.parameters():
-        param.requires_grad = False
-
-    for param in model.classifier.parameters():
-        param.requires_grad = True
-
-
     # resize model to add pause token
     tokenizer.add_tokens(["[pause]"])
     model.resize_token_embeddings(len(tokenizer))
