@@ -41,6 +41,10 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
     tokenizer = BertTokenizer.from_pretrained(base_model)
     model = BertForSequenceClassification.from_pretrained(base_model).to(DEVICE)
 
+    # resize model to add pause token
+    tokenizer.add_tokens(["[pause]"])
+    model.resize_token_embeddings(len(tokenizer))
+
     # and also our optimizer
     optim = AdamW(model.parameters(), lr = config.lr)
 
