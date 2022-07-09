@@ -68,8 +68,9 @@ train_batches = train_data.groupby(by=lambda x: int(x % (len(train_data)/config.
 test_batches = testing_data.groupby(by=lambda x: int(x % (len(testing_data)/config.batch_size)))
 
 # train our model!
-model, _ = train(config.model, train_batches, test_batches, config, wandb_run=run)
+model, tokenizer = train(config.model, train_batches, test_batches, config, wandb_run=run)
 
 # save the model
 model.save_pretrained(f"./models/{run.name}")
+tokenizer.save_pretrained(f"./models/{run.name}")
 
