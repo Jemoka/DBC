@@ -19,10 +19,10 @@ import pandas as pd # type: ignore
 
 # set the path for data, this changes based on
 # the experiement we are running
-DATA_PATH =  "./data/transcripts_nodisfluency/cookiepitt-7-7" # in path
-OUT_PATH = "./data/transcripts_nodisfluency/cookiepitt-7-7-long-bal.dat" # out path
-WINDOWED_PATH = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat" # out path
-WINDOW_SIZE =  7 
+DATA_PATH =  "./data/transcripts_pauses/alignedpitt-7-8/" # in path
+OUT_PATH = "./data/transcripts_nodisfluency/alignedpitt-7-8.bat" # out path
+WINDOWED_PATH = "./data/transcripts_nodisfluency/alignedpitt-7-8-windowed.bat" # out path
+WINDOW_SIZE =  5 
 TESTING_SPLIT = 10  # testing split (patients kper class)
 
 #################################################
@@ -55,7 +55,7 @@ def read_and_clean(files, target):
     for data_file in files:
         # read the datafile as a single column csv
         try: 
-            data = pd.read_csv(data_file, sep="|", header=None)
+            data = pd.read_csv(data_file, sep="`", header=None)
         except:
             print(f"Read error on {data_file}, skipping.")
             continue
