@@ -38,7 +38,7 @@ CONFIG = {
     "max_length": 60
 }
 
-DATASET = "./data/transcripts_pauses/alignedpitt-7-8.bat"
+DATASET = "./data/transcripts_pauses/alignedpitt-7-8-windowed.bat"
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
