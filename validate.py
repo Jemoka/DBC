@@ -27,14 +27,14 @@ from util import predict_on_sample, eval_model_on_batch
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 TOKENIZER = "nghuyong/ernie-2.0-en"
-MODEL = "./models/smart-river-14"
+MODEL = "./models/ethereal-dew-15"
 MAX_LENGTH = 60
-WINDOW_SIZE = 7
+WINDOW_SIZE = 5
 
 #############################
 
 # Load the current dataset, which is pitt-7-4
-df = pd.read_pickle("./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat")
+df = pd.read_pickle("./data/transcripts_pauses/alignedpitt-7-8-windowed.bat")
 
 # Get the testing data
 testing_data = df[df["split"] == "test"]
