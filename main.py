@@ -38,7 +38,7 @@ CONFIG = {
     "max_length": 60
 }
 
-DATASET = "./data/transcripts_nodisfluency/cookiepitt-7-7-windowed-long-bal.dat"
+DATASET = "./data/transcripts_pauses/alignedpitt-7-8.bat"
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
