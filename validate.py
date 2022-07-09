@@ -26,8 +26,8 @@ from util import predict_on_sample, eval_model_on_batch
 
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-TOKENIZER = "nghuyong/ernie-2.0-en"
-MODEL = "./models/ethereal-dew-15"
+TOKENIZER = "./models/golden-tree-16"
+MODEL = "./models/golden-tree-16"
 MAX_LENGTH = 60
 WINDOW_SIZE = 5
 
