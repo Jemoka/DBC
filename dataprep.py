@@ -20,8 +20,8 @@ import pandas as pd # type: ignore
 # set the path for data, this changes based on
 # the experiement we are running
 DATA_PATH =  "./data/transcripts_pauses/alignedpitt-7-8/" # in path
-OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-8.bat" # out path
-WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-8-windowed.bat" # out path
+OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-8-flucalc.bat" # out path
+WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat" # out path
 
 DEMENTIA_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/dementia.xlsx"
 CONTROL_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/control.xlsx"
@@ -83,19 +83,6 @@ def read_and_clean(files, target):
 
     return result
 
-# note that, for the "target" colmumn, 1 is Dementia and 0 is control
-
-## control files ##
-control = read_and_clean(control_flo_outs, 0)
-
-## dementia files ##
-dementia = read_and_clean(dementia_flo_outs, 1)
-
-# concat!
-data = pd.concat([control, dementia])
-# reset index
-data = data.reset_index(drop=True)
-
 # metadata
 meta_control = pd.read_excel(CONTROL_META, index_col=0)
 meta_control.dropna(axis=1, inplace=True)
@@ -122,6 +109,33 @@ mor_dementia = meta_dementia[["mor_Utts",
 meta_dementia[["mor_Utts",
                "mor_Words",
                "mor_syllables"]] = mor_dementia
+
+# note that, for the "target" colmumn, 1 is Dementia and 0 is control
+
+## control files ##
+control = read_and_clean(control_flo_outs, 0)
+control.reset_index(drop=True, inplace=True)
+
+## dementia files ##
+dementia = read_and_clean(dementia_flo_outs, 1)
+dementia.reset_index(drop=True, inplace=True)
+
+# get metadata for control
+meta_control_table = meta_control.loc[control["trial"].apply(lambda x:x+".cha")]
+meta_dementia_table = meta_dementia.loc[dementia["trial"].apply(lambda x:x+".cha")]
+
+# reset indicies
+meta_control_table.reset_index(drop=True, inplace=True)
+meta_dementia_table.reset_index(drop=True, inplace=True)
+
+# concatenate tables
+control = pd.concat([control, meta_control_table], axis=1)
+dementia = pd.concat([dementia, meta_dementia_table], axis=1)
+
+# concat!
+data = pd.concat([control, dementia])
+# reset index
+data = data.reset_index(drop=True)
 
 #################################################
 
@@ -183,7 +197,7 @@ data_shuffled = data.iloc[randomness.sample(range(len(data)), len(data))]
 results = []
 trials = []
 
-# create windowed results
+# # create windowed results
 for trial, frame in data.groupby(level=0):
     # for each slice index
     for i in range(0, len(frame)-WINDOW_SIZE, 1):
@@ -191,13 +205,18 @@ for trial, frame in data.groupby(level=0):
         slice = frame.iloc[i:i+WINDOW_SIZE]
         # get the concatenated string
         utterance_concat = " ".join(slice["utterance"])
+
+        # create final metadata slice
+        final_slice = slice.drop(columns=["utterance"]).iloc[0]
+        final_slice["utterance"] = utterance_concat
+
         # append the results
-        results.append(pd.Series({"utterance": utterance_concat,
-                                "target": frame["target"][0],
-                                "split": frame["split"][0]}))
+        results.append(final_slice)
         # tell results about trials
         trials.append(trial)
 
+
+# TODO
 # create windowed results
 data_windowed = pd.DataFrame(results)
 # create new window index
