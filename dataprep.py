@@ -22,6 +22,10 @@ import pandas as pd # type: ignore
 DATA_PATH =  "./data/transcripts_pauses/alignedpitt-7-8/" # in path
 OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-8.bat" # out path
 WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-8-windowed.bat" # out path
+
+DEMENTIA_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/dementia.xlsx"
+CONTROL_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/control.xlsx"
+
 WINDOW_SIZE =  5 
 TESTING_SPLIT = 10  # testing split (patients kper class)
 
@@ -91,6 +95,33 @@ dementia = read_and_clean(dementia_flo_outs, 1)
 data = pd.concat([control, dementia])
 # reset index
 data = data.reset_index(drop=True)
+
+# metadata
+meta_control = pd.read_excel(CONTROL_META, index_col=0)
+meta_control.dropna(axis=1, inplace=True)
+meta_control = meta_control.iloc(axis=1)[11:]
+
+meta_dementia = pd.read_excel(DEMENTIA_META, index_col=0)
+meta_dementia.dropna(axis=1, inplace=True)
+meta_dementia = meta_dementia.iloc(axis=1)[11:]
+
+# normalize all mor incidies
+# control
+mor_control = meta_control[["mor_Utts",
+                            "mor_Words",
+                            "mor_syllables"]].apply(lambda x: (x-x.mean())/x.std(),
+                                                    axis=0)
+meta_control[["mor_Utts",
+              "mor_Words",
+              "mor_syllables"]] = mor_control
+# dementia
+mor_dementia = meta_dementia[["mor_Utts",
+                              "mor_Words",
+                              "mor_syllables"]].apply(lambda x: (x-x.mean())/x.std(),
+                                                      axis=0)
+meta_dementia[["mor_Utts",
+               "mor_Words",
+               "mor_syllables"]] = mor_dementia
 
 #################################################
 
