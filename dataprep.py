@@ -20,13 +20,13 @@ import pandas as pd # type: ignore
 # set the path for data, this changes based on
 # the experiement we are running
 DATA_PATH =  "./data/transcripts_pauses/alignedpitt-7-8/" # in path
-OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-11-flucalc.bat" # out path
-WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat" # out path
+OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-entire.bat" # out path
+WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-entire-windowed.bat" # out path
 
 DEMENTIA_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/dementia.xlsx"
 CONTROL_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/control.xlsx"
 
-WINDOW_SIZE =  3 
+WINDOW_SIZE =  None 
 TESTING_SPLIT = 5  # testing split (patients kper class)
 
 #################################################
@@ -199,10 +199,14 @@ trials = []
 
 # # create windowed results
 for trial, frame in data.groupby(level=0):
+    if WINDOW_SIZE:
+        ws = WINDOW_SIZE
+    else:
+        ws = len(frame)-1
     # for each slice index
-    for i in range(0, len(frame)-WINDOW_SIZE, 1):
+    for i in range(0, ws, 1):
         # for each slide of the data
-        slice = frame.iloc[i:i+WINDOW_SIZE]
+        slice = frame.iloc[i:i+ws]
         # get the concatenated string
         utterance_concat = " ".join(slice["utterance"])
 
