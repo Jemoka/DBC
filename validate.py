@@ -26,9 +26,9 @@ from util import eval_model_on_batch
 
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-TOKENIZER = "./models/different-cosmos-46"
-MODEL = "./models/different-cosmos-46"
-FEATURES = ["%_Pauses"]
+TOKENIZER = "./models/upbeat-waterfall-47"
+MODEL = "./models/upbeat-waterfall-47"
+FEATURES = []
 MAX_LENGTH = 60
 WINDOW_SIZE = 5
 
