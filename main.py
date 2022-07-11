@@ -42,7 +42,7 @@ CONFIG = {
     "features": []
 }
 
-DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
+DATASET = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat"
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
