@@ -34,8 +34,8 @@ CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
     "batch_size": 64,
     "epochs": 8,
-    "lr": 1e-4,
-    "max_length": 60
+    "lr": 1e-5,
+    "max_length": 70
 }
 
 DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
