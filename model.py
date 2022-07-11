@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss, Dropout
+from torch.nn import Linear, Module, BCELoss, Dropout, Softmax
 
 # and huggingface
 from transformers import BertForSequenceClassification, BertTokenizer
@@ -32,7 +32,7 @@ class Model(torch.nn.Module):
         self.out = Linear(model.config.hidden_size, out_features)
 
         # sigmoid
-        self.sigmoid = Sigmoid()
+        self.softmax = Softmax(dim=1)
 
         # loss function
         self.bce_loss = BCELoss()
@@ -50,7 +50,7 @@ class Model(torch.nn.Module):
         meta_embedding = self.meta_feature_droupout(meta_embedding) 
 
         # output
-        output = self.sigmoid(base_out["logits"]+meta_embedding)
+        output = self.softmax(base_out["logits"]+meta_embedding)
 
         # if training, calculate and return loss
         if self.training and labels != None:

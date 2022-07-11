@@ -97,7 +97,7 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
             model_output["loss"].backward()
 
             # calculate the accuracy
-            model_output_encoded = (model_output["logits"].detach() > 0.5)
+            model_output_encoded = model_output["logits"].detach().argmax(dim=1)
             acc = torch.sum(model_output_encoded.bool() == target_tensor)/len(target_tensor)
 
             # and update the model

@@ -52,9 +52,8 @@ def eval_model_on_batch(model, tokenizer, batch, max_length):
                             truncation=True).to(DEVICE)
 
     # pass it through the model
-    model_output = model(**batch_encoded,
-                         meta_features=batch_meta_features)["logits"].detach()
-    model_output_encoded = (model_output > 0.5).squeeze()
+    model_output = model(**batch_encoded)["logits"].detach()
+    model_output_encoded = model_output.argmax(dim=1)
 
     # get targets
     targets = torch.Tensor(batch["target"].to_numpy()).to(DEVICE)
