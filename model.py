@@ -22,7 +22,7 @@ class Model(torch.nn.Module):
         self.meta_feature_norm = BatchNorm1d(in_features)
         # create input embedding
         self.meta_feature_embedding_0 = Linear(in_features, hidden_features)
-        self.meta_feature_embedding_1 = Linera(hidden_features, model.config.hidden_size)
+        self.meta_feature_embedding_1 = Linear(hidden_features, model.config.hidden_size)
 
         # create output layer
         self.out = Linear(model.config.hidden_size, out_features)
