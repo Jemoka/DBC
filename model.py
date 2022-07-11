@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss
+from torch.nn import Linear, Module, BCELoss, Dropout
 
 # and huggingface
 from transformers import BertModel, BertTokenizer
@@ -17,9 +17,12 @@ class Model(torch.nn.Module):
         # create base model
         model = BertModel.from_pretrained(base_model)
         self.base_model = model
+        self.model_droupout = Dropout(p=0.1, inplace=False)
 
         # create input embedding
         self.meta_feature_embedding = Linear(in_features, model.config.hidden_size)
+        # meta droupout
+        self.meta_feature_droupout = Dropout(p=0.1, inplace=False)
 
         # create output layer
         self.out = Linear(model.config.hidden_size, out_features)
@@ -34,7 +37,7 @@ class Model(torch.nn.Module):
         # input metafeature enmebdding
         meta_embedding = F.relu(self.meta_feature_embedding(meta_features))
         # late fusion
-        fusion = F.relu(base_out["pooler_output"] + meta_embedding)
+        fusion = F.relu(self.model_droupout(base_out["pooler_output"]) + self.meta_feature_droupout(meta_embedding))
         # output
         output = F.softmax(self.out(fusion), dim=1)
 

@@ -45,8 +45,8 @@ CONFIG = {
 DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
 
 # set up the run
-run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
-# run = wandb.init(project="DBC", entity="jemoka", config=CONFIG, mode="disabled")
+# run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
+run = wandb.init(project="DBC", entity="jemoka", config=CONFIG, mode="disabled")
 
 # get the configuration
 config = run.config
