@@ -10,7 +10,7 @@ from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 # ok ok new model
 class Model(torch.nn.Module):
 
-    def __init__(self, base_model, in_features, out_features=1):
+    def __init__(self, base_model, in_features, out_features=1, hidden_features=128):
         # initalize
         super().__init__()
 
@@ -21,7 +21,8 @@ class Model(torch.nn.Module):
         # meta feature norm
         self.meta_feature_norm = BatchNorm1d(in_features)
         # create input embedding
-        self.meta_feature_embedding = Linear(in_features, model.config.hidden_size)
+        self.meta_feature_embedding_0 = Linear(in_features, hidden_features)
+        self.meta_feature_embedding_1 = Linera(hidden_features, model.config.hidden_size)
 
         # create output layer
         self.out = Linear(model.config.hidden_size, out_features)
@@ -39,7 +40,8 @@ class Model(torch.nn.Module):
         # norm
         meta_normed = self.meta_feature_norm(meta_features)
         # input metafeature enmebdding
-        meta_embedding = self.meta_feature_embedding(meta_normed)
+        meta_embedding = self.meta_feature_embedding_0(meta_normed)
+        meta_embedding = self.meta_feature_embedding_1(meta_embedding)
         # late fusion
         fusion = base_out["pooler_output"] + meta_embedding
         # output
