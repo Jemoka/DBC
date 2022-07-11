@@ -33,8 +33,8 @@ class Model(torch.nn.Module):
             # create output layer
             self.out = Linear(model.config.hidden_size, out_features)
 
-            # sigmoid
-            self.softmax = Softmax(dim=1)
+        # softmax
+        self.softmax = Softmax(dim=1)
 
         # loss function
         self.bce_loss = BCELoss()

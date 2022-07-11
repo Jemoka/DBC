@@ -39,7 +39,7 @@ CONFIG = {
     "epochs": 4,
     "lr": 1e-5,
     "max_length": 60,
-    "features": ["%_Pauses"]
+    "features": []
 }
 
 DATASET = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat"
