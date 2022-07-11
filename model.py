@@ -47,7 +47,7 @@ class Model(torch.nn.Module):
         # input metafeature enmebdding
         meta_embedding = F.relu(self.meta_feature_embedding_0(meta_features))
         meta_embedding = F.relu(self.meta_feature_embedding_1(meta_embedding))
-        meta_embedding = self.meta_feature_droupout(meta_embedding) 
+        meta_embedding = self.out(self.meta_feature_droupout(meta_embedding))
 
         # output
         output = self.softmax(base_out["logits"]+meta_embedding)
