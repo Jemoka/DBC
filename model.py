@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss
+from torch.nn import Linear, Module, BCELoss, Sigmoid
 
 # and huggingface
 from transformers import BertModel, BertTokenizer
@@ -24,6 +24,9 @@ class Model(torch.nn.Module):
         # create output layer
         self.out = Linear(model.config.hidden_size, out_features)
 
+        # sigmoid
+        self.sigmoid = Sigmoid()
+
         # loss function
         self.bce_loss = BCELoss()
 
@@ -36,7 +39,7 @@ class Model(torch.nn.Module):
         # late fusion
         fusion = base_out["pooler_output"] + meta_embedding
         # output
-        output = F.sigmoid(self.out(fusion))
+        output = self.sigmoid(self.out(fusion))
 
         # if training, calculate and return loss
         if self.training and labels != None:
