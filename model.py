@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss, Sigmoid, BatchNorm1d
+from torch.nn import Linear, Module, BCELoss, Dropout
 
 # and huggingface
 from transformers import BertModel, BertTokenizer
@@ -17,12 +17,14 @@ class Model(torch.nn.Module):
         # create base model
         model = BertModel.from_pretrained(base_model)
         self.base_model = model
+        self.model_droupout = Dropout(p=0.1, inplace=False)
 
         # meta feature norm
         self.meta_feature_norm = BatchNorm1d(in_features)
         # create input embedding
-        self.meta_feature_embedding_0 = Linear(in_features, hidden_features)
-        self.meta_feature_embedding_1 = Linear(hidden_features, model.config.hidden_size)
+        self.meta_feature_embedding = Linear(in_features, model.config.hidden_size)
+        # meta droupout
+        self.meta_feature_droupout = Dropout(p=0.1, inplace=False)
 
         # create output layer
         self.out = Linear(model.config.hidden_size, out_features)
@@ -40,10 +42,9 @@ class Model(torch.nn.Module):
         # norm
         meta_normed = self.meta_feature_norm(meta_features)
         # input metafeature enmebdding
-        meta_embedding = self.meta_feature_embedding_0(meta_normed)
-        meta_embedding = self.meta_feature_embedding_1(meta_embedding)
+        meta_embedding = F.relu(self.meta_feature_embedding(meta_features))
         # late fusion
-        fusion = base_out["pooler_output"] + meta_embedding
+        fusion = F.relu(self.model_droupout(base_out["pooler_output"]) + self.meta_feature_droupout(meta_embedding))
         # output
         output = self.sigmoid(self.out(fusion))
 
