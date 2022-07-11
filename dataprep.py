@@ -20,14 +20,14 @@ import pandas as pd # type: ignore
 # set the path for data, this changes based on
 # the experiement we are running
 DATA_PATH =  "./data/transcripts_pauses/alignedpitt-7-8/" # in path
-OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-8-flucalc.bat" # out path
-WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat" # out path
+OUT_PATH = "./data/transcripts_pauses/alignedpitt-7-11-flucalc.bat" # out path
+WINDOWED_PATH = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat" # out path
 
 DEMENTIA_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/dementia.xlsx"
 CONTROL_META = "./data/transcripts_pauses/alignedpitt-7-8-flucalc/control.xlsx"
 
-WINDOW_SIZE =  5 
-TESTING_SPLIT = 10  # testing split (patients kper class)
+WINDOW_SIZE =  3 
+TESTING_SPLIT = 5  # testing split (patients kper class)
 
 #################################################
 
