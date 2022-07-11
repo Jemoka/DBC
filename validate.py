@@ -26,16 +26,16 @@ from util import eval_model_on_batch
 
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-TOKENIZER = "./models/golden-sunset-43"
-MODEL = "./models/golden-sunset-43"
-FEATURES = ["%_WWR", "%_mono-WWR", "%_Total_(SLD+TD)"]
+TOKENIZER = "./models/upbeat-waterfall-47"
+MODEL = "./models/upbeat-waterfall-47"
+FEATURES = []
 MAX_LENGTH = 60
 WINDOW_SIZE = 5
 
 #############################
 
 # Load the current dataset, which is pitt-7-4
-df = pd.read_pickle("./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat")
+df = pd.read_pickle("./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat")
 
 # combine
 df = df[FEATURES+["split", "utterance", "target"]]

@@ -37,12 +37,12 @@ CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
     "batch_size": 64,
     "epochs": 4,
-    "lr": 1e-5,
+    "lr": 1e-4,
     "max_length": 60,
-    "features": ["%_Pauses"]
+    "features": []
 }
 
-DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
+DATASET = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat"
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
