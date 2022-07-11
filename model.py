@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss, Sigmoid
+from torch.nn import Linear, Module, BCELoss, Sigmoid, BatchNorm1d
 
 # and huggingface
 from transformers import BertModel, BertTokenizer
@@ -18,6 +18,8 @@ class Model(torch.nn.Module):
         model = BertModel.from_pretrained(base_model)
         self.base_model = model
 
+        # meta feature norm
+        self.meta_feature_norm = BatchNorm1d(in_features)
         # create input embedding
         self.meta_feature_embedding = Linear(in_features, model.config.hidden_size)
 
@@ -34,8 +36,10 @@ class Model(torch.nn.Module):
     def forward(self, meta_features, labels=None, **kwargs):
         # pass kwargs into the model
         base_out = self.base_model(**kwargs)
+        # norm
+        meta_normed = self.meta_feature_norm(meta_features)
         # input metafeature enmebdding
-        meta_embedding = self.meta_feature_embedding(meta_features)
+        meta_embedding = self.meta_feature_embedding(meta_normed)
         # late fusion
         fusion = base_out["pooler_output"] + meta_embedding
         # output
