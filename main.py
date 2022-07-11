@@ -71,6 +71,6 @@ test_batches = testing_data.groupby(by=lambda x: int(x % (len(testing_data)/conf
 model, tokenizer = train(config.model, train_batches, test_batches, config, wandb_run=run)
 
 # save the model
-model.save_pretrained(f"./models/{run.name}")
+torch.save(model, f"./models/{run.name}")
 tokenizer.save_pretrained(f"./models/{run.name}")
 
