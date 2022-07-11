@@ -35,7 +35,7 @@ WINDOW_SIZE = 5
 #############################
 
 # Load the current dataset, which is pitt-7-4
-df = pd.read_pickle("./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat")
+df = pd.read_pickle("./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat")
 
 # combine
 df = df[FEATURES+["split", "utterance", "target"]]
