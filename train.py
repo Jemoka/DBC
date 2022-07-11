@@ -85,7 +85,8 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
                                         truncation=True).to(DEVICE)
 
             # encode the labels
-            target_tensor = torch.tensor(batch["target"].to_numpy()).to(DEVICE)
+            target_tensor = torch.unsqueeze(torch.tensor(batch["target"].to_numpy()),
+                                            1).to(DEVICE)
 
             # run the model
             model_output = model(**batch_encoded,
