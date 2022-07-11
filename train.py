@@ -86,18 +86,17 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
 
             # encode the labels
             target_tensor = torch.tensor(batch["target"].to_numpy()).to(DEVICE)
-            labels_encoded = F.one_hot(target_tensor, num_classes=2)
 
             # run the model
             model_output = model(**batch_encoded,
                                  meta_features=batch_meta_features,
-                                 labels=labels_encoded.float())
+                                 labels=target_tensor.float())
 
             # backprop the loss
             model_output["loss"].backward()
 
             # calculate the accuracy
-            model_output_encoded = model_output["logits"].detach().argmax(dim=1)
+            model_output_encoded = (model_output["logits"].detach() > 0.5)
             acc = torch.sum(model_output_encoded.bool() == target_tensor)/len(target_tensor)
 
             # and update the model

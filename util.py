@@ -54,7 +54,7 @@ def eval_model_on_batch(model, tokenizer, batch, max_length):
     # pass it through the model
     model_output = model(**batch_encoded,
                          meta_features=batch_meta_features)["logits"].detach()
-    model_output_encoded = model_output.argmax(dim=1)
+    model_output_encoded = model_output > 0.5
 
     # get targets
     targets = torch.Tensor(batch["target"].to_numpy()).to(DEVICE)

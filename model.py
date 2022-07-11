@@ -10,7 +10,7 @@ from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 # ok ok new model
 class Model(torch.nn.Module):
 
-    def __init__(self, base_model, in_features, out_features=2):
+    def __init__(self, base_model, in_features, out_features=1):
         # initalize
         super().__init__()
 
@@ -36,7 +36,7 @@ class Model(torch.nn.Module):
         # late fusion
         fusion = base_out["pooler_output"] + meta_embedding
         # output
-        output = F.softmax(self.out(fusion), dim=1)
+        output = F.sigmoid(self.out(fusion), dim=1)
 
         # if training, calculate and return loss
         if self.training and labels != None:
