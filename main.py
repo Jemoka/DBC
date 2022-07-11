@@ -35,11 +35,11 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 # initialize the model
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
-    "batch_size": 32,
+    "batch_size": 64,
     "epochs": 4,
     "lr": 1e-5,
-    "max_length": 70,
-    "features": ["%_WWR", "%_mono-WWR", "%_Total_(SLD+TD)"]
+    "max_length": 60,
+    "features": ["%_Pauses"]
 }
 
 DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
