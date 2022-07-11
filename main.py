@@ -36,8 +36,8 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 CONFIG = {
     "model": "nghuyong/ernie-2.0-en",
     "batch_size": 32,
-    "epochs": 10,
-    "lr": 1e-6,
+    "epochs": 4,
+    "lr": 1e-5,
     "max_length": 70,
     "features": ["%_WWR", "%_mono-WWR", "%_Total_(SLD+TD)"]
 }
@@ -45,8 +45,8 @@ CONFIG = {
 DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
 
 # set up the run
-# run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
-run = wandb.init(project="DBC", entity="jemoka", config=CONFIG, mode="disabled")
+run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)
+# run = wandb.init(project="DBC", entity="jemoka", config=CONFIG, mode="disabled")
 
 # get the configuration
 config = run.config

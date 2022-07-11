@@ -32,9 +32,9 @@ class Model(torch.nn.Module):
         # pass kwargs into the model
         base_out = self.base_model(**kwargs)
         # input metafeature enmebdding
-        meta_embedding = self.meta_feature_embedding(meta_features)
+        meta_embedding = F.relu(self.meta_feature_embedding(meta_features))
         # late fusion
-        fusion = base_out["pooler_output"] + meta_embedding
+        fusion = F.relu(base_out["pooler_output"] + meta_embedding)
         # output
         output = F.softmax(self.out(fusion), dim=1)
 
