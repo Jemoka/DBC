@@ -125,5 +125,5 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
 
 
     # save the model
-    # return model, tokenizer
+    return model, tokenizer
 
