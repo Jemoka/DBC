@@ -10,14 +10,13 @@ from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 # ok ok new model
 class Model(torch.nn.Module):
 
-    def __init__(self, base_model, in_features, out_features=2, hidden_features=128):
+    def __init__(self, base_model, in_features, out_features=2, hidden_features=128, weight=None):
         # initalize
         super().__init__()
 
         # create base model
         model = BertForSequenceClassification.from_pretrained(base_model)
         self.base_model = model
-        self.model_droupout = Dropout(p=0.1, inplace=False)
 
         self.in_features = in_features
         if in_features >0:
@@ -33,11 +32,12 @@ class Model(torch.nn.Module):
             # create output layer
             self.out = Linear(model.config.hidden_size, out_features)
 
-        # softmax
-        self.softmax = Softmax(dim=1)
-
         # loss function
-        self.bce_loss = BCEWithLogitsLoss()
+        if weight:
+            pweight = weight
+        else:
+            pweight = torch.ones([out_features])
+        self.bce_loss = BCEWithLogitsLoss(pos_weight=pweight)
 
     # forward
     def forward(self, meta_features, labels=None, **kwargs):
