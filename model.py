@@ -36,7 +36,7 @@ class Model(torch.nn.Module):
         # late fusion
         fusion = base_out["pooler_output"] + meta_embedding
         # output
-        output = F.sigmoid(self.out(fusion), dim=1)
+        output = F.sigmoid(self.out(fusion))
 
         # if training, calculate and return loss
         if self.training and labels != None:
