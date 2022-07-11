@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss, Dropout, Softmax,BatchNorm1d
+from torch.nn import Linear, Module, BCEWithLogitsLoss, Dropout, Softmax,BatchNorm1d
 
 # and huggingface
 from transformers import BertForSequenceClassification, BertTokenizer
@@ -37,12 +37,12 @@ class Model(torch.nn.Module):
         self.softmax = Softmax(dim=1)
 
         # loss function
-        self.bce_loss = BCELoss()
+        self.bce_loss = BCEWithLogitsLoss()
 
     # forward
     def forward(self, meta_features, labels=None, **kwargs):
         # pass kwargs into the model
-        base_out = self.base_model(**kwargs)
+        base_out = self.base_model(**kwargs, labels=labels)
 
         if self.in_features > 0:
             # norm
@@ -54,9 +54,9 @@ class Model(torch.nn.Module):
             meta_embedding = self.out(self.meta_feature_droupout(meta_embedding))
 
             # output
-            output = self.softmax(base_out["logits"]+meta_embedding)
+            output = base_out["logits"]+meta_embedding
         else:
-            output = self.softmax(base_out["logits"])
+            output = base_out["logits"]
 
         # if training, calculate and return loss
         if self.training and labels != None:
