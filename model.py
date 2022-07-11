@@ -4,25 +4,27 @@ import torch.nn.functional as F
 from torch.nn import Linear, Module, BCELoss, Dropout
 
 # and huggingface
-from transformers import BertModel, BertTokenizer
+from transformers import BertForSequenceClassification, BertTokenizer
 from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 
 # ok ok new model
 class Model(torch.nn.Module):
 
-    def __init__(self, base_model, in_features, out_features=1, hidden_features=128):
+    def __init__(self, base_model, in_features, out_features=2, hidden_features=128):
         # initalize
         super().__init__()
 
         # create base model
-        model = BertModel.from_pretrained(base_model)
+        model = BertForSequenceClassification.from_pretrained(base_model)
         self.base_model = model
         self.model_droupout = Dropout(p=0.1, inplace=False)
 
         # meta feature norm
         self.meta_feature_norm = BatchNorm1d(in_features)
         # create input embedding
-        self.meta_feature_embedding = Linear(in_features, model.config.hidden_size)
+        self.meta_feature_embedding_0 = Linear(in_features, model.config.hidden_size)
+        self.meta_feature_embedding_1 = Linear(model.config.hidden_size,
+                                               model.config.hidden_size)
         # meta droupout
         self.meta_feature_droupout = Dropout(p=0.1, inplace=False)
 
@@ -41,12 +43,14 @@ class Model(torch.nn.Module):
         base_out = self.base_model(**kwargs)
         # norm
         meta_normed = self.meta_feature_norm(meta_features)
+
         # input metafeature enmebdding
-        meta_embedding = F.relu(self.meta_feature_embedding(meta_features))
-        # late fusion
-        fusion = F.relu(self.model_droupout(base_out["pooler_output"]) + self.meta_feature_droupout(meta_embedding))
+        meta_embedding = F.relu(self.meta_feature_embedding_0(meta_features))
+        meta_embedding = F.relu(self.meta_feature_embedding_1(meta_embedding))
+        meta_embedding = self.meta_feature_droupout(meta_embedding) 
+
         # output
-        output = self.sigmoid(self.out(fusion))
+        output = self.sigmoid(base_out["logits"]+meta_embedding)
 
         # if training, calculate and return loss
         if self.training and labels != None:
