@@ -87,11 +87,12 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
             # encode the labels
             target_tensor = torch.unsqueeze(torch.tensor(batch["target"].to_numpy()),
                                             1).to(DEVICE)
+            labels_encoded = F.one_hot(target_tensor, num_classes=2)
 
             # run the model
             model_output = model(**batch_encoded,
                                  meta_features=batch_meta_features,
-                                 labels=target_tensor.float())
+                                 labels=labels_encoded.float())
 
             # backprop the loss
             model_output["loss"].backward()
