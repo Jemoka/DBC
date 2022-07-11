@@ -1,7 +1,7 @@
 # import torch and layers
 import torch
 import torch.nn.functional as F
-from torch.nn import Linear, Module, BCELoss, Dropout, Softmax
+from torch.nn import Linear, Module, BCELoss, Dropout, Softmax,BatchNorm1d
 
 # and huggingface
 from transformers import BertForSequenceClassification, BertTokenizer
