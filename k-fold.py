@@ -35,7 +35,8 @@ CONFIG = {
     "batch_size": 64,
     "epochs": 8,
     "lr": 1e-4,
-    "max_length": 60
+    "max_length": 60,
+    "features": ["%_WWR", "%_mono-WWR", "%_Total_(SLD+TD)"]
 }
 
 # that used on helpful-leaf-7
@@ -64,6 +65,9 @@ print("")
 
 # Load the current dataset, which is pitt-7-4
 df = pd.read_pickle(DATASET)
+
+# combine
+df = df[config.features+["split", "utterance", "target"]]
 
 # Get the training data
 train_data = df[df["split"] == "train"]

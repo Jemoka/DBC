@@ -38,7 +38,8 @@ CONFIG = {
     "batch_size": 64,
     "epochs": 8,
     "lr": 1e-5,
-    "max_length": 70
+    "max_length": 70,
+    "features": ["%_WWR", "%_mono-WWR", "%_Total_(SLD+TD)"]
 }
 
 DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
@@ -52,6 +53,9 @@ config = run.config
 
 # Load the current dataset, which is pitt-7-4
 df = pd.read_pickle(DATASET)
+
+# combine
+df = df[config.features+["split", "utterance", "target"]]
 
 # Split train and test
 train_data = df[df["split"] == "train"]
