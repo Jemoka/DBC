@@ -19,20 +19,22 @@ class Model(torch.nn.Module):
         self.base_model = model
         self.model_droupout = Dropout(p=0.1, inplace=False)
 
-        # meta feature norm
-        self.meta_feature_norm = BatchNorm1d(in_features)
-        # create input embedding
-        self.meta_feature_embedding_0 = Linear(in_features, model.config.hidden_size)
-        self.meta_feature_embedding_1 = Linear(model.config.hidden_size,
-                                               model.config.hidden_size)
-        # meta droupout
-        self.meta_feature_droupout = Dropout(p=0.1, inplace=False)
+        self.in_features = in_features
+        if in_features >0:
+            # meta feature norm
+            self.meta_feature_norm = BatchNorm1d(in_features)
+            # create input embedding
+            self.meta_feature_embedding_0 = Linear(in_features, model.config.hidden_size)
+            self.meta_feature_embedding_1 = Linear(model.config.hidden_size,
+                                                   model.config.hidden_size)
+            # meta droupout
+            self.meta_feature_droupout = Dropout(p=0.1, inplace=False)
 
-        # create output layer
-        self.out = Linear(model.config.hidden_size, out_features)
+            # create output layer
+            self.out = Linear(model.config.hidden_size, out_features)
 
-        # sigmoid
-        self.softmax = Softmax(dim=1)
+            # sigmoid
+            self.softmax = Softmax(dim=1)
 
         # loss function
         self.bce_loss = BCELoss()
@@ -41,16 +43,20 @@ class Model(torch.nn.Module):
     def forward(self, meta_features, labels=None, **kwargs):
         # pass kwargs into the model
         base_out = self.base_model(**kwargs)
-        # norm
-        meta_normed = self.meta_feature_norm(meta_features)
 
-        # input metafeature enmebdding
-        meta_embedding = F.relu(self.meta_feature_embedding_0(meta_features))
-        meta_embedding = F.relu(self.meta_feature_embedding_1(meta_embedding))
-        meta_embedding = self.out(self.meta_feature_droupout(meta_embedding))
+        if self.in_features > 0:
+            # norm
+            meta_normed = self.meta_feature_norm(meta_features)
 
-        # output
-        output = self.softmax(base_out["logits"]+meta_embedding)
+            # input metafeature enmebdding
+            meta_embedding = F.relu(self.meta_feature_embedding_0(meta_features))
+            meta_embedding = F.relu(self.meta_feature_embedding_1(meta_embedding))
+            meta_embedding = self.out(self.meta_feature_droupout(meta_embedding))
+
+            # output
+            output = self.softmax(base_out["logits"]+meta_embedding)
+        else:
+            output = self.softmax(base_out["logits"])
 
         # if training, calculate and return loss
         if self.training and labels != None:
