@@ -1,11 +1,12 @@
 # random for testing
 import random
 
-# import pandas
+# import numpy and pandas
 import pandas as pd # type: ignore
+import numpy as np
 
 # and huggingface
-from transformers import BertForSequenceClassification, BertTokenizer
+from transformers import BertModel, BertTokenizer
 from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 
 # torch
@@ -19,14 +20,18 @@ import wandb # type: ignore
 # tqdm
 from tqdm import tqdm
 
-# import our utils
+# import our utils 
 from util import eval_model_on_batch
+
+# import our models
+from model import Model
 
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 # training code called by both k-fold as well as one-shot holdout
 def train(base_model, train_batches, test_batches, config, run_val=True, wandb_run=None):
+
     # set up dummy run if needed
     if wandb_run:
         run = wandb_run
@@ -37,13 +42,16 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
     train_batch_count = len(train_batches) # minus one to drop half-batch
     test_batch_count = len(test_batches)  # minus one to drop half-batch
 
-    # Let's load our models.
+    # Let's load our tokenizer.
     tokenizer = BertTokenizer.from_pretrained(base_model)
-    model = BertForSequenceClassification.from_pretrained(base_model).to(DEVICE)
+
+    # and let's load our model by calculating feature size
+    num_features = len(train_batches.get_group(0).columns)
+    model = Model(base_model, num_features-2).to(DEVICE)
 
     # resize model to add pause token
     tokenizer.add_tokens(["[pause]"])
-    model.resize_token_embeddings(len(tokenizer))
+    model.base_model.resize_token_embeddings(len(tokenizer))
 
     # and also our optimizer
     optim = AdamW(model.parameters(), lr = config.lr)
@@ -64,19 +72,26 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
             # get the batch
             batch = train_batches.get_group(batch_id)
 
+            # get meta features
+            batch_meta_features = torch.tensor(batch.drop(columns=["utterance",
+                                                                "target"]).to_numpy())
+            batch_meta_features = batch_meta_features.to(DEVICE).float()
+
             # encode the batch
             batch_encoded = tokenizer(batch["utterance"].to_list(),
-                                      return_tensors="pt",
-                                      max_length=config.max_length,
-                                      padding=True,
-                                      truncation=True).to(DEVICE)
+                                        return_tensors="pt",
+                                        max_length=config.max_length,
+                                        padding=True,
+                                        truncation=True).to(DEVICE)
 
             # encode the labels
             target_tensor = torch.tensor(batch["target"].to_numpy()).to(DEVICE)
             labels_encoded = F.one_hot(target_tensor, num_classes=2)
 
             # run the model
-            model_output = model(**batch_encoded, labels=labels_encoded.float())
+            model_output = model(**batch_encoded,
+                                 meta_features=batch_meta_features,
+                                 labels=labels_encoded.float())
 
             # backprop the loss
             model_output["loss"].backward()
@@ -110,5 +125,5 @@ def train(base_model, train_batches, test_batches, config, run_val=True, wandb_r
 
 
     # save the model
-    return model, tokenizer
+    # return model, tokenizer
 

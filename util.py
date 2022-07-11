@@ -39,6 +39,11 @@ def eval_model_on_batch(model, tokenizer, batch, max_length):
         (float)s accuracy, precision, recall
     """
 
+    # get meta features
+    batch_meta_features = torch.tensor(batch.drop(columns=["utterance",
+                                                        "target"]).to_numpy())
+    batch_meta_features = batch_meta_features.to(DEVICE).float()
+
     # encode the batch
     batch_encoded = tokenizer(batch["utterance"].to_list(),
                             return_tensors="pt",
@@ -47,7 +52,8 @@ def eval_model_on_batch(model, tokenizer, batch, max_length):
                             truncation=True).to(DEVICE)
 
     # pass it through the model
-    model_output = model(**batch_encoded)["logits"].detach()
+    model_output = model(**batch_encoded,
+                         meta_features=batch_meta_features)["logits"].detach()
     model_output_encoded = model_output.argmax(dim=1)
 
     # get targets
@@ -83,31 +89,6 @@ def eval_model_on_batch(model, tokenizer, batch, max_length):
 
     # and return
     return acc, prec, recc
-
-# define prediction on sample tools
-def predict_on_sample(model, sample, tokenizer, max_length):
-    """evaluate a pytorch model on a batch of data
-
-    Args:
-        model (torch.Model): the model to eval
-        sample (str): string to test
-        batch (pd.DataFrame): input batch
-        max_length (int): the max length the model is trained with
-
-    Returns:
-        list[float] [control_logit, ad_logit]
-    """
-
-    # encode the batch
-    batch_encoded = tokenizer([sample],
-                            return_tensors="pt",
-                            max_length=max_length,
-                            padding=True,
-                            truncation=True).to(DEVICE)
-    # pass it through the model
-    model_output = model(**batch_encoded)["logits"].detach()
-    # print results
-    return model_output[0].cpu().numpy().tolist()
 
 # confidence intervals
 def mean_confidence_interval(data, confidence=0.95):

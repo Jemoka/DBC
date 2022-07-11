@@ -5,7 +5,7 @@ import random
 import pandas as pd # type: ignore
 
 # and huggingface
-from transformers import BertForSequenceClassification, BertTokenizer
+from transformers import BertModel, BertTokenizer
 from transformers.tokenization_utils_base import BatchEncoding # type: ignore
 
 # torch
@@ -38,7 +38,7 @@ CONFIG = {
     "max_length": 60
 }
 
-DATASET = "./data/transcripts_pauses/alignedpitt-7-8-windowed.bat"
+DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
 
 # set up the run
 # run = wandb.init(project="DBC", entity="jemoka", config=CONFIG)

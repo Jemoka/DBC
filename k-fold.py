@@ -39,7 +39,7 @@ CONFIG = {
 }
 
 # that used on helpful-leaf-7
-DATASET = "./data/transcripts_pauses/alignedpitt-7-8-windowed.bat"
+DATASET = "./data/transcripts_pauses/alignedpitt-7-8-flucalc-windowed.bat"
 
 # pg 4, Yuan 2021
 K = 50
