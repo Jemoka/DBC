@@ -204,11 +204,15 @@ for trial, frame in data.groupby(level=0):
     else:
         ws = len(frame)-1
     # for each slice index
-    for i in range(0, ws, 1):
+    for i in range(0, len(frame)-ws, 1):
         # for each slide of the data
         slice = frame.iloc[i:i+ws]
         # get the concatenated string
         utterance_concat = " ".join(slice["utterance"])
+
+        # if length is zero, then ignore
+        if len(slice) == 0:
+            continue
 
         # create final metadata slice
         final_slice = slice.drop(columns=["utterance"]).iloc[0]
