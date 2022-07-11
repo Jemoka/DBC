@@ -26,8 +26,8 @@ from util import eval_model_on_batch
 
 # initialize the device
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-TOKENIZER = "./models/royal-pond-21"
-MODEL = "./models/dummy-LC6tiW5WWr2jew5wbwWkRG"
+TOKENIZER = "./models/fallen-dust-25"
+MODEL = "./models/fallen-dust-25"
 MAX_LENGTH = 60
 WINDOW_SIZE = 5
 
