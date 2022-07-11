@@ -1,6 +1,9 @@
 # random for testing
 import random
 
+# os for pathing
+import os
+
 # import pandas
 import pandas as pd # type: ignore
 
@@ -49,7 +52,7 @@ testing_data = testing_data.reset_index(drop=True)
 
 # Epic. Let's load our models.
 tokenizer = BertTokenizer.from_pretrained(TOKENIZER)
-model = torch.load(MODEL).to(DEVICE)
+model = torch.load(os.path.join(MODEL, "model.bin")).to(DEVICE)
 explainer = SequenceClassificationExplainer(model.base_model, tokenizer)
 
 model.eval()

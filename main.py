@@ -1,6 +1,9 @@
 # random for testing
 import random
 
+# os for dir
+import os
+
 # import pandas
 import pandas as pd # type: ignore
 
@@ -71,6 +74,13 @@ test_batches = testing_data.groupby(by=lambda x: int(x % (len(testing_data)/conf
 model, tokenizer = train(config.model, train_batches, test_batches, config, wandb_run=run)
 
 # save the model
-torch.save(model, f"./models/{run.name}")
+save_path = f"./models/{run.name}"
+
+# create save path
+if not os.path.exists(save_path):
+    os.mkdir(save_path)
+
+# save model
+torch.save(model, os.path.join(save_path, "model.bin"))
 tokenizer.save_pretrained(f"./models/{run.name}")
 
