@@ -39,7 +39,7 @@ CONFIG = {
     "epochs": 4,
     "lr": 1e-4,
     "max_length": 60,
-    "features": []
+    "features": ['mor_Utts', 'mor_Words', 'mor_syllables', '#_Prolongation', '%_Prolongation', '#_Broken_word', '%_Broken_word', '#_Block', '%_Block', '#_PWR', '%_PWR', '#_PWR-RU', '%_PWR-RU', '#_WWR', '%_WWR', '#_mono-WWR', '%_mono-WWR', '#_WWR-RU', '%_WWR-RU', '#_mono-WWR-RU', '%_mono-WWR-RU', 'Mean_RU', '#_Phonological_fragment', '%_Phonological_fragment', '#_Phrase_repetitions', '%_Phrase_repetitions', '#_Word_revisions', '%_Word_revisions', '#_Phrase_revisions', '%_Phrase_revisions', '#_Pauses', '%_Pauses', '#_Filled_pauses', '%_Filled_pauses', '#_TD', '%_TD', '#_SLD', '%_SLD', '#_Total_(SLD+TD)', '%_Total_(SLD+TD)', 'Weighted_SLD']
 }
 
 DATASET = "./data/transcripts_pauses/alignedpitt-7-11-flucalc-windowed.bat"
