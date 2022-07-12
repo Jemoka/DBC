@@ -19,8 +19,8 @@ repath_file = lambda file_path, new_dir: os.path.join(new_dir, pathlib.Path(file
 CLAN_PATH=""
 
 # file to check
-DATADIR="/Users/houliu/Documents/Projects/DBC/data/raw/alignedpitt-7-8/dementia"
-OUTPUTDIR="/Users/houliu/Documents/Projects/DBC/data/transcripts_pauses/alignedpitt-7-11/dementia"
+DATADIR="/Users/houliu/Documents/Projects/DBC/data/raw/alignedpitt-7-8/control"
+OUTPUTDIR="/Users/houliu/Documents/Projects/DBC/data/transcripts_pauses/alignedpitt-7-11/control"
 
 # get output
 files = globase(DATADIR, "*.cha")
@@ -82,6 +82,7 @@ for checkfile in files:
     results_meta = []
     # extract pause info
     pauseinfo = []
+    wordinfo = []
     for result in aligned_results:
         # collect result token
         result_tokens = []
@@ -106,6 +107,7 @@ for checkfile in files:
                 # if start and pause exists, append the pause token mark
                 if start and (end-start)>0:
                     pauseinfo.append((start, end-start))
+                    wordinfo.append((start, end))
                     result_tokens.append("[pause]"+str(end-start)+"[pause]")
                 start = res[1]
             else:
@@ -129,8 +131,9 @@ for checkfile in files:
         results_pause.append(sentence)
 
     pauseframe = pd.DataFrame(pauseinfo)
+    wordframe = pd.DataFrame(wordinfo)
     try:
-        pauseframe.columns=["start", "length"]
+        pauseframe.columns=["start", "end"]
     except ValueError:
         continue
 
@@ -140,7 +143,7 @@ for checkfile in files:
     # write the final output file
     with open(repath_file(checkfile, OUTPUTDIR).replace("cha", "txt"), "w") as df:
         df.write(output)
-    pauseframe.to_csv(repath_file(checkfile, OUTPUTDIR).replace("cha", "csv"))
+    wordframe.to_csv(repath_file(checkfile, OUTPUTDIR).replace("cha", "csv"))
 
 
 
