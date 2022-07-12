@@ -21,6 +21,7 @@ CLAN_PATH=""
 # file to check
 DATADIR="/Users/houliu/Documents/Projects/DBC/data/raw/alignedpitt-7-8/control"
 OUTPUTDIR="/Users/houliu/Documents/Projects/DBC/data/transcripts_pauses/alignedpitt-7-11/control"
+WORDINFO="/Users/houliu/Documents/Projects/DBC/data/wordinfo/alignedpitt-7-11/control"
 
 # get output
 files = globase(DATADIR, "*.cha")
@@ -104,10 +105,10 @@ for checkfile in files:
                 res = [int(i.replace("|pause|>", "").replace("|pause|", "")) for i in token.split("_")]
                 # and then append pauses
                 end = res[0]
+                wordinfo.append((res[0], res[1]))
                 # if start and pause exists, append the pause token mark
                 if start and (end-start)>0:
                     pauseinfo.append((start, end-start))
-                    wordinfo.append((start, end))
                     result_tokens.append("[pause]"+str(end-start)+"[pause]")
                 start = res[1]
             else:
@@ -133,7 +134,7 @@ for checkfile in files:
     pauseframe = pd.DataFrame(pauseinfo)
     wordframe = pd.DataFrame(wordinfo)
     try:
-        pauseframe.columns=["start", "end"]
+        wordframe.columns=["start", "end"]
     except ValueError:
         continue
 
@@ -143,7 +144,5 @@ for checkfile in files:
     # write the final output file
     with open(repath_file(checkfile, OUTPUTDIR).replace("cha", "txt"), "w") as df:
         df.write(output)
-    wordframe.to_csv(repath_file(checkfile, OUTPUTDIR).replace("cha", "csv"))
-
-
+    wordframe.to_csv(repath_file(checkfile, WORDINFO).replace("cha", "csv"))
 
