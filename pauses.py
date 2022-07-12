@@ -167,8 +167,8 @@ clsf.score(in_test, out_test)
 # data
 data.to_csv("./data/wordinfo/alignedpitt-7-1.csv", index=False)
 
-data[data.target==0].silence_duration.mean()
-data[data.target==0].silence_duration.std()
+print(data[data.target==1].verbal_rate.mean(), ",",
+      data[data.target==1].verbal_rate.std())
 
 ####### trash ######
 
