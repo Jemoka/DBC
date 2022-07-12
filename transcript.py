@@ -138,8 +138,8 @@ for checkfile in files:
     output = "\n".join(results_pause).strip()
 
     # write the final output file
-    # with open(repath_file(checkfile, OUTPUTDIR).replace("cha", "txt"), "w") as df:
-        # df.write(output)
+    with open(repath_file(checkfile, OUTPUTDIR).replace("cha", "txt"), "w") as df:
+        df.write(output)
     pauseframe.to_csv(repath_file(checkfile, OUTPUTDIR).replace("cha", "csv"))
 
 
