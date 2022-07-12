@@ -7,6 +7,8 @@ import re
 # glob
 import glob
 
+import pandas as pd
+
 from pandas.core.generic import _align_as_utc
 
 # Oneliner of directory-based glob and replace
@@ -18,7 +20,7 @@ CLAN_PATH=""
 
 # file to check
 DATADIR="/Users/houliu/Documents/Projects/DBC/data/raw/alignedpitt-7-8/dementia"
-OUTPUTDIR="/Users/houliu/Documents/Projects/DBC/data/transcripts_pauses/alignedpitt-7-8/dementia"
+OUTPUTDIR="/Users/houliu/Documents/Projects/DBC/data/transcripts_pauses/alignedpitt-7-11/dementia"
 
 # get output
 files = globase(DATADIR, "*.cha")
@@ -77,6 +79,9 @@ for checkfile in files:
 
     # go through and get differences
     results_pause = []
+    results_meta = []
+    # extract pause info
+    pauseinfo = []
     for result in aligned_results:
         # collect result token
         result_tokens = []
@@ -98,8 +103,9 @@ for checkfile in files:
                 res = [int(i.replace("|pause|>", "").replace("|pause|", "")) for i in token.split("_")]
                 # and then append pauses
                 end = res[0]
-                # if start exists and pausing is longer than 250 ms, append the pause token mark
-                if start and (end-start)>250:
+                # if start and pause exists, append the pause token mark
+                if start and (end-start)>0:
+                    pauseinfo.append((start, end-start))
                     result_tokens.append("[pause]"+str(end-start)+"[pause]")
                 start = res[1]
             else:
@@ -122,10 +128,19 @@ for checkfile in files:
         # append final results
         results_pause.append(sentence)
 
+    pauseframe = pd.DataFrame(pauseinfo)
+    try:
+        pauseframe.columns=["start", "length"]
+    except ValueError:
+        continue
+
     # output_file
     output = "\n".join(results_pause).strip()
 
     # write the final output file
-    with open(repath_file(checkfile, OUTPUTDIR).replace("cha", "txt"), "w") as df:
-        df.write(output)
+    # with open(repath_file(checkfile, OUTPUTDIR).replace("cha", "txt"), "w") as df:
+        # df.write(output)
+    pauseframe.to_csv(repath_file(checkfile, OUTPUTDIR).replace("cha", "csv"))
+
+
 
